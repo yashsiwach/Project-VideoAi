@@ -8,8 +8,6 @@ export const validate = (email, password,fullName) => {
     if (!isPassword) {
         return "Invalid Password";
     }
-    if (!isFullName||fullName.length===0) {
-        return "Full Name is missing invalid";
-    }
+   
     return null;
 };
