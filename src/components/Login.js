@@ -1,8 +1,9 @@
 import Header from "./Header";
 import { useRef, useState } from "react";
 import { validate } from "../utile/Validator";
-import { createUserWithEmailAndPassword ,signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword ,signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../utile/Firebase";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
     const [isSignIn, setIsSignIn] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -10,6 +11,8 @@ const Login = () => {
     const email = useRef(null);
     const password = useRef(null);
     const fullName = useRef(null);
+    const navigate = useNavigate();
+
 
     const changeIt = () => {
         setIsSignIn(!isSignIn);
@@ -28,17 +31,27 @@ const Login = () => {
                 createUserWithEmailAndPassword(auth, email.current?.value, password.current?.value)
                     .then((userCredential) => {
                         const user = userCredential.user;
-                        console.log(user);
+                        updateProfile(user, {
+                            displayName: fullName.current.value, photoURL: "https://avatars.githubusercontent.com/u/112823140?v=4"
+                        }).then(() => {
+                              
+                            navigate("/browse")
+                          }).catch((error) => {
+                              setErrorMessage(message);
+                          });
+                       
                     })
                     .catch((error) => {
                         setErrorMessage(error.message);
                         console.log(error.code, error.message);
+                        
                     });
             } else {
                 signInWithEmailAndPassword(auth, email.current?.value, password.current?.value)
                     .then((userCredential) => {
                         const user = userCredential.user;
                         console.log(user);
+                        navigate("/browse");
                     })
                     .catch((error) => {
                         setErrorMessage(error.message);
@@ -50,7 +63,11 @@ const Login = () => {
 
     return (
         <div>
-            <Header />
+             <div className='absolute px-8 py-2 z-10 flex justify-between items-center w-full'>
+      <img className="w-44" src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
+        alt='logo'
+                />
+                </div>
             <img className="absolute" src="https://assets.nflxext.com/ffe/siteui/vlv3/b2c3e95b-b7b5-4bb7-a883-f4bfc7472fb7/19fc1a4c-82db-4481-ad08-3a1dffbb8c39/IN-en-20240805-POP_SIGNUP_TWO_WEEKS-perspective_WEB_24a485f6-1820-42be-9b60-1b066f1eb869_large.jpg"
                 alt="background"
             />
